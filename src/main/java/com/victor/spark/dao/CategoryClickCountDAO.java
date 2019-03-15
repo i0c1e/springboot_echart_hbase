@@ -8,14 +8,16 @@ package com.victor.spark.dao;
 
 import com.victor.spark.domain.CategoryClickCount;
 import com.victor.spark.domain.utils.HBaseUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Component
+//@Bean="categoryClickCountDAO")
 public class CategoryClickCountDAO {
     public List<CategoryClickCount> query(String day) throws IOException {
         List<CategoryClickCount> list = new ArrayList<CategoryClickCount>();
@@ -31,12 +33,12 @@ public class CategoryClickCountDAO {
         return list;
     }
 
-    public static void main(String[] args) throws IOException {
-        CategoryClickCountDAO categoryClickCountDAO = new CategoryClickCountDAO();
-        List<CategoryClickCount> result = categoryClickCountDAO.query("20190114");
-        for (CategoryClickCount categoryClickCount : result) {
-            System.out.print(categoryClickCount.getName() + " --> ");
-            System.out.println(categoryClickCount.getClickcount());
-        }
-    }
+//    public static void main(String[] args) throws IOException {
+//        CategoryClickCountDAO categoryClickCountDAO = new CategoryClickCountDAO();
+//        List<CategoryClickCount> result = categoryClickCountDAO.query("20190114");
+//        for (CategoryClickCount categoryClickCount : result) {
+//            System.out.print(categoryClickCount.getName() + " --> ");
+//            System.out.println(categoryClickCount.getClickcount());
+//        }
+//    }
 }

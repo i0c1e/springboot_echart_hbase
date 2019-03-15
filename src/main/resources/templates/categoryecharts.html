@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <script src="js/echarts.min.js"></script>
+    <script src="js/jquery.min.js"></script>
     <title>Title</title>
 
 </head>
@@ -19,7 +20,7 @@
         backgroundColor: '#2c343c',
 
         title: {
-            text: '哔哩哔哩 (゜ - ゜) つロ 干杯～-bilibili',
+            text: '实时数据统计',
             left: 'center',
             top: 20,
             textStyle: {
@@ -27,7 +28,7 @@
             }
         },
 
-        tooltip: {
+        tooltip : {
             trigger: 'item',
             formatter: "{a} <br/>{b} : {c} ({d}%)"
         },
@@ -40,21 +41,31 @@
                 colorLightness: [0, 1]
             }
         },
-        series: [
+        series : [
             {
-                name: '访问来源',
-                type: 'pie',
-                radius: '55%',
+                name:'访问来源',
+                type:'pie',
+                radius : '55%',
                 center: ['50%', '50%'],
-                data: [
-                    {value: 335, name: '直接访问'},
-                    {value: 310, name: '邮件营销'},
-                    {value: 274, name: '联盟广告'},
-                    {value: 235, name: '视频广告'},
-                    {value: 400, name: '搜索引擎'}
-                ].sort(function (a, b) {
-                    return a.value - b.value;
-                }),
+                data: (function () {//<![CDATA[
+                    var datas = [];
+                    $.ajax({
+                        type: "POST",
+                        url: "/spark/dynamic_clickcount",
+                        dataType: 'json',
+                        async: false,
+                        success: function (result) {
+                            for (var i = 0; i < result.length; i++) {
+                                console.log(result[i]);
+                                datas.push({"value": result[i].clickcount, "name": result[i].name})
+                            }
+
+                        }
+                    })
+                    console.log(datas);
+                    return datas;
+                    //]]>
+                })().sort(function (a, b) { return a.value - b.value; }),
                 roseType: 'radius',
                 label: {
                     normal: {
@@ -75,11 +86,9 @@
                 },
                 itemStyle: {
                     normal: {
-                        label: {
-                            show: true,
-                            formatter: '{b}:{c}({d}%)'
-                        },
-                        labelLine: {show: true}
+                        color: '#c23531',
+                        shadowBlur: 200,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 },
 

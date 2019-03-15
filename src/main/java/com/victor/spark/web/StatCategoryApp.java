@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,26 +34,35 @@ public class StatCategoryApp {
     }
 
 
-    @Autowired
-    CategoryClickCountDAO categoryClickCountDAO;
+//    @Autowired
+    CategoryClickCountDAO categoryClickCountDAO = new CategoryClickCountDAO();
 
-    @RequestMapping(value = "/dynamic_clickcount", method = RequestMethod.GET)
+    @RequestMapping(value = "/dynamic_clickcount", method = RequestMethod.POST)
     public List<CategoryClickCount> query() throws IOException {
         List<CategoryClickCount> result = categoryClickCountDAO.query("20190114");
+        List<CategoryClickCount> CNresult = new ArrayList<>();
+//        for (CategoryClickCount categoryClickCount : result) {
+//            System.out.println(categoryClickCount.getName());
+//        }
+        for (CategoryClickCount c : result) {
+            String key = link.get(c.getName().substring(9));
+            c.setName(key);
+        }
         return result;
     }
 
     @RequestMapping(value = "/echarts", method = RequestMethod.GET)
     public ModelAndView echarts() {
-        return new ModelAndView("echarts");
+//        System.out.println("11111");
+        return new ModelAndView("categoryecharts");
     }
 
-    public static void main(String[] args) throws IOException {
-        StatCategoryApp app = new StatCategoryApp();
-        List<CategoryClickCount> categoryClickCounts = app.query();
-        for (CategoryClickCount c : categoryClickCounts) {
-            System.out.println(c.getName()+"-->"+c.getClickcount());
-        }
-
-    }
+//    public static void main(String[] args) throws IOException {
+//        StatCategoryApp app = new StatCategoryApp();
+//        List<CategoryClickCount> categoryClickCounts = app.query();
+//        for (CategoryClickCount c : categoryClickCounts) {
+//            System.out.println(c.getName()+"-->"+c.getClickcount());
+//        }
+//
+//    }
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <script src="js/echarts.min.js"></script>
     <script src="js/jquery.min.js"></script>
-    <title>Title</title>
+    <title>实时访问统计</title>
 
 </head>
 <body>
@@ -14,92 +14,83 @@
 <script type="text/javascript">
     // 基于准备好的 dom，初始化 echarts 实例
     var myChart=echarts.init(document.getElementById('main'));
-
+    var datas = [];
+    function refresh() {//<![CDATA[
+        datas = [];
+        $.ajax({
+            type: "POST",
+            url: "/spark/dynamic_clickcount",
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    // console.log(result[1]);
+                    datas.push({"value": result[i].clickcount, "name": result[i].name})
+                }
+            }
+        })
+        // console.log(datas);
+        // setInterval(refresh,5000)
+        return datas;
+        //]]>
+    }
+    // function refreshOnTime(){
+    //     console.log(1)
+    //     refresh()
+    //     setInterval(refreshOnTime,2000)
+    //
+    // }
 
     option = {
-        backgroundColor: '#2c343c',
-
-        title: {
-            text: '实时数据统计',
-            left: 'center',
-            top: 20,
-            textStyle: {
-                color: '#ccc'
-            }
+        title : {
+            text: 'bilibili网站视频实时点击',
+            subtext: '哔哩哔哩 (゜ - ゜) つロ 干杯～',
+            x:'center'
         },
-
         tooltip : {
             trigger: 'item',
             formatter: "{a} <br/>{b} : {c} ({d}%)"
         },
-
-        visualMap: {
-            show: false,
-            min: 80,
-            max: 600,
-            inRange: {
-                colorLightness: [0, 1]
-            }
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['舞蹈区','数码区','游戏区','鬼畜区','音乐区','技术区']
         },
         series : [
             {
-                name:'访问来源',
-                type:'pie',
+                name: '访问统计',
+                type: 'pie',
                 radius : '55%',
-                center: ['50%', '50%'],
-                data: (function () {//<![CDATA[
-                    var datas = [];
-                    $.ajax({
-                        type: "POST",
-                        url: "/spark/dynamic_clickcount",
-                        dataType: 'json',
-                        async: false,
-                        success: function (result) {
-                            for (var i = 0; i < result.length; i++) {
-                                console.log(result[i]);
-                                datas.push({"value": result[i].clickcount, "name": result[i].name})
-                            }
-
-                        }
-                    })
-                    console.log(datas);
-                    return datas;
-                    //]]>
-                })().sort(function (a, b) { return a.value - b.value; }),
-                roseType: 'radius',
-                label: {
-                    normal: {
-                        textStyle: {
-                            color: 'rgba(255, 255, 255, 0.3)'
-                        }
-                    }
-                },
-                labelLine: {
-                    normal: {
-                        lineStyle: {
-                            color: 'rgba(255, 255, 255, 0.3)'
-                        },
-                        smooth: 0.2,
-                        length: 10,
-                        length2: 20
-                    }
-                },
+                center: ['50%', '60%'],
+                data: refresh().sort(function (a, b) { return a.value - b.value; }),
                 itemStyle: {
-                    normal: {
-                        color: '#c23531',
-                        shadowBlur: 200,
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
-                },
-
-                animationType: 'scale',
-                animationEasing: 'elasticOut',
-                animationDelay: function (idx) {
-                    return Math.random() * 200;
                 }
             }
         ]
     };
+    setInterval(function () {
+        //addData(true);
+        myChart.setOption({
+            // xAxis: {
+            //     data: date
+            // },
+            series: [{
+                name:'访问统计',
+                data: refresh()
+            }]
+        });
+    }, 3000);
+
+    // refreshOnTime()
+    // refresh()
+    // setInterval('refresh',3000)
+
+
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
 </script>

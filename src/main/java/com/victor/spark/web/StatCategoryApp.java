@@ -39,13 +39,15 @@ public class StatCategoryApp {
 
     @RequestMapping(value = "/dynamic_clickcount", method = RequestMethod.POST)
     public List<CategoryClickCount> query() throws IOException {
-        List<CategoryClickCount> result = categoryClickCountDAO.query("20190114");
+        List<CategoryClickCount> result = categoryClickCountDAO.query("20190115");
         List<CategoryClickCount> CNresult = new ArrayList<>();
 //        for (CategoryClickCount categoryClickCount : result) {
 //            System.out.println(categoryClickCount.getName());
 //        }
         for (CategoryClickCount c : result) {
             String key = link.get(c.getName().substring(9));
+//            System.out.println(1);
+//            System.out.println(key+c.getClickcount());
             c.setName(key);
         }
         return result;
